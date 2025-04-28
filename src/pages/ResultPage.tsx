@@ -97,11 +97,11 @@ const ResultPage: React.FC = () => {
   // --- Function จัดการ Class ของ Tab (เหมือนเดิม) ---
   const getTabClass = (tabName: 'table' | 'graph'): string => {
     // ... logic เดิม ...
-    const baseClass = "py-2 px-4 rounded-t-lg cursor-pointer text-sm font-medium focus:outline-none";
+    const baseClass = "py-2 px-4 rounded-t-lg cursor-pointer text-sm focus:outline-none";
     if (activeTab === tabName) {
-      return `${baseClass} text-blue-700 border-b-2 border-blue-700 bg-blue-50`;
+      return `${baseClass} font-bold text-blue-700 -mb-px border-b-white bg-blue-50`;
     } else {
-      return `${baseClass} text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50`;
+      return `${baseClass} font-medium text-gray-500 border-b-gray-400 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50`;
     }
   };
 
@@ -130,7 +130,7 @@ const ResultPage: React.FC = () => {
           <nav className="-mb-px flex space-x-[0.5px]" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('table')}
-              className={`border border-b-0 border-gray-400 rounded-t px-4 py-2 mr-1 ${getTabClass('table')}`}
+              className={`border border-gray-400 rounded-t px-4 py-2 mr-1 ${getTabClass('table')}`}
             >
               ตารางผลประโยชน์
             </button>
