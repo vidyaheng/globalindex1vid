@@ -80,12 +80,12 @@ const ResultTable: React.FC<ResultTableProps> = ({
           {/* --- แถวที่ 2 (Sub-headers) --- */}
           <tr className="text-base text-black border-b-[3px] border-blue-900 bg-blue-200">
                 {/* ... Sub-headers เหมือนเดิม ... */}
-                {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินปันผล</th>}
-                {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินเวนคืน</th>}
+                {showSurrenderDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินปันผล</th>}
+                {showSurrenderDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินเวนคืน</th>}
                 <th className={thBaseClasses + " border-b border-white w-[120px] text-center"}>ผลประโยชน์รวม</th>
-                {showDeathDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินปันผล</th>}
-                {showDeathDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>คุ้มครองชีวิต</th>}
-                <th className={thBaseClasses + " border-b border-r border-white w-[120px] text-center"}>ผลประโยชน์รวม</th>
+                {showDeathDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินปันผล</th>}
+                {showDeathDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>คุ้มครองชีวิต</th>}
+                <th className={thBaseClasses + " border-b border-r border-blue-900 w-[120px] text-center"}>ผลประโยชน์รวม</th>
           </tr>
         </thead>
         {/* ----- TBODY ----- */}
