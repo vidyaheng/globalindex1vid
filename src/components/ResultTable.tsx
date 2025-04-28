@@ -14,9 +14,9 @@ interface ResultTableProps {
 }
 
 // Base classes for cells (เหมือนเดิม)
-const thBaseClasses = "py-2 px-2 border-l-2 border-b-2 border-gray-200 align-middle";
+const thBaseClasses = "py-2 px-2 border-l-4 border-b-4 border-gray-200 align-middle";
 const tdBaseClasses = "py-2 px-2 border-l border-b border-blue-300 align-middle";
-const tfootTdBaseClasses = "py-2 px-2 border-l border-blue-200 align-middle";
+const tfootTdBaseClasses = "py-2 px-2 border-l border-blue-300 align-middle";
 
 
 const ResultTable: React.FC<ResultTableProps> = ({
