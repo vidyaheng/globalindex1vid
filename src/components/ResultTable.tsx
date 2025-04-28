@@ -14,9 +14,9 @@ interface ResultTableProps {
 }
 
 // Base classes for cells (เหมือนเดิม)
-const thBaseClasses = "py-2 px-2 border-l-4 border-b-4 border-gray-200 align-middle";
-const tdBaseClasses = "py-2 px-2 border-l border-b border-blue-300 align-middle";
-const tfootTdBaseClasses = "py-2 px-2 border-l border-blue-300 align-middle";
+const thBaseClasses = "py-2 px-2 border-l border-b border-gray-800 align-middle";
+const tdBaseClasses = "py-2 px-2 border-l border-b border-blue-800 align-middle";
+const tfootTdBaseClasses = "py-2 px-2 border-l border-blue-800 align-middle";
 
 
 const ResultTable: React.FC<ResultTableProps> = ({
@@ -36,18 +36,18 @@ const ResultTable: React.FC<ResultTableProps> = ({
 
   // Button component (เหมือนเดิม)
   const toggleButton = (isVisible: boolean, toggleFunc: () => void) => (
-    <button onClick={toggleFunc} className="text-blue-200 hover:text-white ml-1 focus:outline-none align-middle">
+    <button onClick={toggleFunc} className="text-blue-700 hover:text-blue-900 ml-1 focus:outline-none align-middle">
       {isVisible ? <FaMinusCircle size="0.8em"/> : <FaPlusCircle size="0.8em"/>}
     </button>
   );
 
   return (
-    <div className="overflow-x-auto shadow-md sm:rounded-lg mt-6 border border-blue-900">
+    <div className="overflow-x-auto shadow-md sm:rounded-s mt-6 border-t-[3px] border-l border-r border-b border-blue-900">
       <table className="w-full text-sm text-left text-gray-700 border-collapse">
         {/* ----- THEAD ----- */}
         <thead className="text-lg uppercase sticky top-0 z-10">
           {/* --- แถวที่ 1 --- */}
-          <tr className="bg-blue-900 text-white font-bold">
+          <tr className="bg-blue-200 text-black font-bold">
             {/* ... th อายุ, ปีที่ ... */}
              <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center"}>อายุ</th>
              <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center"}>ปีที่</th>
@@ -78,7 +78,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
              </th>
           </tr>
           {/* --- แถวที่ 2 (Sub-headers) --- */}
-          <tr className="text-base text-white bg-blue-900">
+          <tr className="text-base text-black border-b-[3px] border-blue-900 bg-blue-200">
                 {/* ... Sub-headers เหมือนเดิม ... */}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินปันผล</th>}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินเวนคืน</th>}
@@ -110,8 +110,8 @@ const ResultTable: React.FC<ResultTableProps> = ({
           ))}
         </tbody>
         {/* ----- TFOOT ----- */}
-        <tfoot className="text-xs text-gray-800 bg-gray-100 font-semibold">
-            <tr className="border-t-2 border-blue-900 text-sm font-bold">
+        <tfoot className="text-xs text-gray-800 bg-blue-200 font-semibold">
+            <tr className="border-t-2 border-b-[3px] border-blue-900 text-sm font-bold">
                <td colSpan={2} className={tfootTdBaseClasses + " text-center"}>รวม</td>
                <td className={tfootTdBaseClasses + " text-right text-red-600"}>{formatNumberWithCommas(Math.round(results.totalPremium))}</td>
               {/* *** ใช้ Prop ที่รับมาสำหรับแสดงผลรวม Tax Benefit *** */}
