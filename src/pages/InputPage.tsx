@@ -286,8 +286,8 @@ const InputPage: React.FC = () => {
                 error={sumAssuredError} // ★★★ ส่ง Error message ★★★
               />
             </div>
-            <div className="mt-7">
-              <FaExchangeAlt className="text-gray-500 text-xl" />
+            <div className="mt-8">
+              <FaExchangeAlt className="text-blue-800 text-xl" />
             </div>
             <div className="flex-1">
               <label htmlFor="premium" className="block text-sm font-medium text-gray-700 mb-1 text-right pr-2">เบี้ยประกัน</label>

@@ -127,16 +127,16 @@ const ResultPage: React.FC = () => {
       <div className="container mx-auto mt-6 px-4">
         {/* Tab Navigation */}
         <div className="border-b border-gray-400">
-          <nav className="-mb-px flex space-x-4" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-[0.5px]" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('table')}
-              className={getTabClass('table')}
+              className={`border border-b-0 border-gray-400 rounded-t px-4 py-2 mr-1 ${getTabClass('table')}`}
             >
               ตารางผลประโยชน์
             </button>
             <button
               onClick={() => setActiveTab('graph')}
-              className={getTabClass('graph')}
+              className={`border border-b-0 border-gray-400 rounded-t px-4 py-2 ${getTabClass('graph')}`}
             >
               กราฟ
             </button>
