@@ -1,6 +1,6 @@
 // --- ResultTable.tsx ---
 import React, { useState } from 'react'; // <<< อาจจะไม่ต้องการ useState ถ้า state อื่นๆ ไม่ได้ใช้แล้ว หรือย้ายไป Parent หมด
-import { YearlyCalculationResult, CalculationResults } from '../types';
+import { CalculationResults } from '../types';
 import { formatNumberWithCommas } from '../utils/formatters';
 import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa';
 
