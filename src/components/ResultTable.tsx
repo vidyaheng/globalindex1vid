@@ -82,7 +82,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
                 {/* ... Sub-headers เหมือนเดิม ... */}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินปันผล</th>}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินเวนคืน</th>}
-                <th className={thBaseClasses + " border-b border-white w-[120px] text-center"}>ผลประโยชน์รวม</th>
+                <th className={thBaseClasses + " border-b border-blue-900 w-[120px] text-center"}>ผลประโยชน์รวม</th>
                 {showDeathDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>เงินปันผล</th>}
                 {showDeathDetails && <th className={thBaseClasses + " border-b border-blue-900 w-[100px] text-center"}>คุ้มครองชีวิต</th>}
                 <th className={thBaseClasses + " border-b border-r border-blue-900 w-[120px] text-center"}>ผลประโยชน์รวม</th>
