@@ -48,7 +48,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
         <thead className="text-base uppercase sticky top-0 z-10">
 
           {/* --- แถวที่ 1 ของ Header --- */}
-          <tr className="bg-blue-100 text-black font-bold">
+          <tr className="text-black font-bold">
             {/* th ใช้ thBaseClasses + เพิ่ม border-b และ border-r (ยกเว้นอันสุดท้าย) */}
             <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center border-b border-r border-black"}>อายุ</th>
             <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center border-b border-r border-black"}>ปีที่</th>
@@ -80,7 +80,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
 
           {/* --- แถวที่ 2 ของ Header (Sub-headers) --- */}
           {/* --- แถวนี้กำหนด border-b-2 เพื่อให้เส้นใต้ Header หนา 2px --- */}
-          <tr className="text-sm text-black bg-blue-100 border-b-2 border-black">
+          <tr className="text-sm text-black border-b-2 border-black">
             {/* th ใช้ thBaseClasses + เพิ่ม border-r (ยกเว้นอันสุดท้าย) */}
             {/* ไม่ต้องใส่ border-b ที่นี่ เพราะทั้งแถวกำหนด border-b-2 แล้ว */}
             {showSurrenderDetails && <th className={thBaseClasses + " w-[100px] text-center border-r border-black"}>เงินปันผล</th>}
@@ -97,7 +97,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
         {/* ----- TBODY: เนื้อหาตาราง ----- */}
         <tbody>
           {results.yearlyData.map((row, index) => (
-            <tr key={row.policyYear} className={`bg-white hover:bg-gray-50 even:bg-gray-100 ${row.policyYear === 16 ? 'font-bold' : ''}`}>
+            <tr key={row.policyYear} className={`bg-gray-100 hover:bg-gray-50 even:bg-white ${row.policyYear === 16 ? 'font-bold' : ''}`}>
               {/* td ใช้ tdBaseClasses + เพิ่ม border-r (ยกเว้นอันสุดท้าย) */}
               <td className={tdBaseClasses + " text-center border-r border-black"}>{initialAge + index}</td>
               <td className={tdBaseClasses + " text-center border-r border-black"}>{row.policyYear}</td>
@@ -117,7 +117,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
         </tbody>
 
         {/* ----- TFOOT: ส่วนสรุปท้ายตาราง ----- */}
-        <tfoot className="text-xs text-gray-800 bg-blue-100 font-semibold">
+        <tfoot className="text-xs text-gray-800 font-semibold">
             {/* --- แถวสรุป กำหนด border-t-2 ให้เส้นบนหนา 2px --- */}
             <tr className="border-t-2 border-black text-sm font-bold">
                 {/* td ใช้ tfootTdBaseClasses + เพิ่ม border-r (ยกเว้นอันสุดท้าย) */}
