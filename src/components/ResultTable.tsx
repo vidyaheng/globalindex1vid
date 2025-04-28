@@ -15,7 +15,7 @@ interface ResultTableProps {
 
 // Base classes for cells (เหมือนเดิม)
 const thBaseClasses = "py-2 px-2 border-l-2 border-b-2 border-[#f0f0f0] align-middle";
-const tdBaseClasses = "py-2 px-2 border-l border-b border-blue-200 align-middle";
+const tdBaseClasses = "py-2 px-2 border-l border-b border-blue-300 align-middle";
 const tfootTdBaseClasses = "py-2 px-2 border-l border-blue-200 align-middle";
 
 
@@ -47,7 +47,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
         {/* ----- THEAD ----- */}
         <thead className="text-lg uppercase sticky top-0 z-10">
           {/* --- แถวที่ 1 --- */}
-          <tr className="bg-[#013467] text-white font-bold">
+          <tr className="bg-blue-900 text-white font-bold">
             {/* ... th อายุ, ปีที่ ... */}
              <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center"}>อายุ</th>
              <th scope="col" rowSpan={2} className={thBaseClasses + " w-[60px] text-center"}>ปีที่</th>
@@ -78,7 +78,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
              </th>
           </tr>
           {/* --- แถวที่ 2 (Sub-headers) --- */}
-          <tr className="text-base text-white bg-[#013467]">
+          <tr className="text-base text-white bg-blue-900">
                 {/* ... Sub-headers เหมือนเดิม ... */}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินปันผล</th>}
                 {showSurrenderDetails && <th className={thBaseClasses + " border-b border-white w-[100px] text-center"}>เงินเวนคืน</th>}

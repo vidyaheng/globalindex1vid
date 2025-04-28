@@ -80,7 +80,7 @@ const ResultPage: React.FC = () => {
       {/* Container หลัก */}
       <div className="container mx-auto mt-6 px-4">
         {/* Tab Navigation (เหมือนเดิม) */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-400">
           <nav className="-mb-px flex space-x-4" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('table')}
@@ -98,7 +98,7 @@ const ResultPage: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="mt-4">
+        <div className="mt-1 bg-white px-8 pb-8 pt-4 rounded-lg shadow-md">
           {/* *** ตรวจสอบ calculationResults ก่อน Render *** */}
           {!calculationResults && <p>กำลังคำนวณ...</p>}
 

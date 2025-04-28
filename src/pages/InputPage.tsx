@@ -56,7 +56,7 @@ const InputPage: React.FC = () => {
   return (
     // พื้นหลังเทาอ่อน
     <div className="min-h-screen bg-gray-100">
-      <Header titleLine1="แผนการเงิน" titleLine2="Global Index 16/6" line1Small={true} />
+      <Header titleLine1="แผนการเงิน" titleLine2="Global Index 16/6" line1Small={false} />
 
       {/* Card สีขาว จัดกลาง */}
       <div className="container mx-auto p-12 max-w-md bg-white mt-8 rounded shadow-lg">
