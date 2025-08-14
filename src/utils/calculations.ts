@@ -90,52 +90,40 @@ export const performCalculations = (
     accumulatedCashback = displayAccumulatedCashback;
   } // --- สิ้นสุด Loop คำนวณรายปี ---
 
-  // --- สร้างกระแสเงินสดสำหรับ IRR (***ส่วนนี้มีการแก้ไข***) ---
-  const surrenderCashflows: number[] = [];
-  const deathCashflows: number[] = [];
+  // --- 👇 สร้างกระแสเงินสดสำหรับ IRR (Logic ใหม่ที่ถูกต้องและแม่นยำ) ---
+  // สร้าง Array ว่างสำหรับ 17 ช่วงเวลา (t=0 ถึง t=16)
+  const surrenderCashflows: number[] = Array(17).fill(0);
+  const deathCashflows: number[] = Array(17).fill(0);
 
-  // เวลา 0: กระแสเงินสดจ่ายออกคือเบี้ยปีแรก
-  surrenderCashflows.push(yearlyData.length > 0 ? -yearlyData[0].premium : 0);
-  deathCashflows.push(yearlyData.length > 0 ? -yearlyData[0].premium : 0);
-
-  // Loop สร้างกระแสเงินสด ณ เวลา 1 ถึง 16
   for (let i = 0; i < 16; i++) {
-    if (!yearlyData[i]) continue;
-    const yearData = yearlyData[i];
-    const yearIndex = i + 1;
+      const yearData = yearlyData[i];
+      const year = yearData.policyYear;
 
-    // เงินจ่ายออก (-): เบี้ยประกันของ *ปีถัดไป*
-    const nextPremiumOutflow = (yearIndex < 6 && yearlyData[yearIndex]) ? -yearlyData[yearIndex].premium : 0;
+      // เงินจ่ายออก (เบี้ยประกัน) เกิดขึ้น "ต้นปี" (t = year - 1)
+      if (yearData.premium > 0) {
+          surrenderCashflows[year - 1] -= yearData.premium;
+          deathCashflows[year - 1] -= yearData.premium;
+      }
 
-    // ***แก้ไขตรงนี้*** เงินรับเข้า (+): เงินคืน + (ถ้ากำหนด) ผลประโยชน์ทางภาษี
-    const currentInflow = yearData.cashback + (includeTaxBenefitInIRR ? yearData.taxBenefit : 0);
+      // เงินรับเข้า (เงินคืน + ผลประโยชน์ภาษี ถ้าเลือก) เกิดขึ้น "ปลายปี" (t = year)
+      const inflow = yearData.cashback + (includeTaxBenefitInIRR ? yearData.taxBenefit : 0);
+      surrenderCashflows[year] += inflow;
+      deathCashflows[year] += inflow;
+  }
 
-    // --- คำนวณ Net Flow สำหรับ IRR เวนคืน ---
-    // ใช้ currentInflow ที่คำนวณไว้
-    let netFlowSurrender = nextPremiumOutflow + currentInflow;
-    if (yearData.policyYear === 16) {
-      netFlowSurrender += yearData.surrenderDividend; // Logic เดิม: ไม่รวม SV
-    }
-    surrenderCashflows.push(netFlowSurrender);
-
-    // --- คำนวณ Net Flow สำหรับ IRR เสียชีวิต ---
-    let netFlowDeath: number;
-    if (yearData.policyYear === 16) {
-      // Logic เดิม: ไม่รวม Cashback และ Tax Benefit ปี 16
-      netFlowDeath = nextPremiumOutflow + yearData.deathBenefit + yearData.deathDividend;
-    } else {
-      // ปีก่อนหน้า: ใช้ currentInflow ที่คำนวณไว้
-      netFlowDeath = nextPremiumOutflow + currentInflow;
-    }
-    deathCashflows.push(netFlowDeath);
-
-  } // --- สิ้นสุด Loop สร้างกระแสเงินสด ---
-
-  // คำนวณ IRR จากกระแสเงินสดที่สร้างขึ้น (ไม่ต้องแก้ไข)
+  // เงินก้อนสุดท้าย ณ "ปลายปีที่ 16" (t = 16)
+  // สำหรับ IRR กรณีเวนคืน, เงินรับคือ "มูลค่าเวนคืนรวม" (หักลบเงินคืนปกติของปีนั้นออกก่อน)
+  const lastYearInflowSurrender = yearlyData[15].cashback + (includeTaxBenefitInIRR ? yearlyData[15].taxBenefit : 0);
+  surrenderCashflows[16] = surrenderCashflows[16] - lastYearInflowSurrender + yearlyData[15].totalSurrenderBenefit;
+  
+  // สำหรับ IRR กรณีเสียชีวิต, เงินรับคือ "ความคุ้มครองชีวิตรวม" (หักลบเงินคืนปกติของปีนั้นออกก่อน)
+  const lastYearInflowDeath = yearlyData[15].cashback + (includeTaxBenefitInIRR ? yearlyData[15].taxBenefit : 0);
+  deathCashflows[16] = deathCashflows[16] - lastYearInflowDeath + yearlyData[15].totalDeathBenefit;
+  
+  // คำนวณ IRR จากกระแสเงินสดที่สร้างขึ้น
   const irrSurrender = calculateIRR(surrenderCashflows);
   const irrDeath = calculateIRR(deathCashflows);
 
-  // คืนผลลัพธ์ทั้งหมด (ไม่ต้องแก้ไข)
   return {
     yearlyData,
     totalPremium: totalPremiumPaid,
