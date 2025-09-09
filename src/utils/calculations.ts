@@ -90,46 +90,60 @@ export const performCalculations = (
     accumulatedCashback = displayAccumulatedCashback;
   } // --- สิ้นสุด Loop คำนวณรายปี ---
 
-  // --- 👇 สร้างกระแสเงินสดสำหรับ IRR (Logic ใหม่ที่ถูกต้องและแม่นยำ) ---
+  // --- 👇 สร้างกระแสเงินสดสำหรับ IRR (ปรับปรุงใหม่ตามหลักการที่ถูกต้อง) ---
+  const policyTermYears = 16;
   // สร้าง Array ว่างสำหรับ 17 ช่วงเวลา (t=0 ถึง t=16)
-  const surrenderCashflows: number[] = Array(17).fill(0);
-  const deathCashflows: number[] = Array(17).fill(0);
+  const surrenderCashflows: number[] = Array(policyTermYears + 1).fill(0);
+  const deathCashflows: number[] = Array(policyTermYears + 1).fill(0);
 
-  for (let i = 0; i < 16; i++) {
+  // --- Loop สร้างกระแสเงินสดพื้นฐาน ---
+  for (let i = 0; i < policyTermYears; i++) {
       const yearData = yearlyData[i];
-      const year = yearData.policyYear;
+      const timeIndexStartOfYear = i;   // t=0 (สำหรับปีที่ 1) ถึง t=15 (สำหรับปีที่ 16)
+      const timeIndexEndOfYear = i + 1; // t=1 (สำหรับปีที่ 1) ถึง t=16 (สำหรับปีที่ 16)
 
-      // เงินจ่ายออก (เบี้ยประกัน) เกิดขึ้น "ต้นปี" (t = year - 1)
+      // 1. กระแสเงินสดออก (Premium): เกิดขึ้นต้นปี (t = year - 1)
       if (yearData.premium > 0) {
-          surrenderCashflows[year - 1] -= yearData.premium;
-          deathCashflows[year - 1] -= yearData.premium;
+          surrenderCashflows[timeIndexStartOfYear] -= yearData.premium;
+          deathCashflows[timeIndexStartOfYear] -= yearData.premium;
       }
 
-      // เงินรับเข้า (เงินคืน + ผลประโยชน์ภาษี ถ้าเลือก) เกิดขึ้น "ปลายปี" (t = year)
-      const inflow = yearData.cashback + (includeTaxBenefitInIRR ? yearData.taxBenefit : 0);
-      surrenderCashflows[year] += inflow;
-      deathCashflows[year] += inflow;
+      // 2. กระแสเงินสดเข้าปกติ (Cashback + Tax Benefit): เกิดขึ้นปลายปี (t = year)
+      const regularInflow = yearData.cashback + (includeTaxBenefitInIRR ? yearData.taxBenefit : 0);
+      surrenderCashflows[timeIndexEndOfYear] += regularInflow;
+      deathCashflows[timeIndexEndOfYear] += regularInflow;
   }
 
-  // เงินก้อนสุดท้าย ณ "ปลายปีที่ 16" (t = 16)
-  // สำหรับ IRR กรณีเวนคืน, เงินรับคือ "มูลค่าเวนคืนรวม" (หักลบเงินคืนปกติของปีนั้นออกก่อน)
-  const lastYearInflowSurrender = yearlyData[15].cashback + (includeTaxBenefitInIRR ? yearlyData[15].taxBenefit : 0);
-  surrenderCashflows[16] = surrenderCashflows[16] - lastYearInflowSurrender + yearlyData[15].totalSurrenderBenefit;
-  
-  // สำหรับ IRR กรณีเสียชีวิต, เงินรับคือ "ความคุ้มครองชีวิตรวม" (หักลบเงินคืนปกติของปีนั้นออกก่อน)
-  const lastYearInflowDeath = yearlyData[15].cashback + (includeTaxBenefitInIRR ? yearlyData[15].taxBenefit : 0);
-  deathCashflows[16] = deathCashflows[16] - lastYearInflowDeath + yearlyData[15].totalDeathBenefit;
-  
-  // คำนวณ IRR จากกระแสเงินสดที่สร้างขึ้น
-  const irrSurrender = calculateIRR(surrenderCashflows);
-  const irrDeath = calculateIRR(deathCashflows);
+  // --- 3. ปรับปรุงเงินก้อนสุดท้าย (Final Payout Adjustment) ณ ปลายปีที่ 16 (t = 16) ---
+const finalYearData = yearlyData[policyTermYears - 1]; // ข้อมูลปีที่ 16
 
-  return {
+// --- กรณีที่ 1: IRR Surrender (ครบกำหนดสัญญา) ---
+// (ส่วนนี้เหมือนเดิม: เพิ่มเงินปันผลเมื่อครบกำหนดสัญญาเข้าไป)
+surrenderCashflows[policyTermYears] += finalYearData.surrenderDividend;
+
+
+// --- กรณีที่ 2: IRR Death (ปรับปรุงตามเงื่อนไขใหม่) ---
+
+// 2a. คำนวณเงินคืนปกติ + ภาษี ที่ถูกเพิ่มเข้าไปใน deathCashflows[16] ใน Loop ด้านบน
+const regularInflowYear16 = finalYearData.cashback + (includeTaxBenefitInIRR ? finalYearData.taxBenefit : 0);
+
+// 2b. ลบเงินคืนปกติ (ผลประโยชน์กรณีครบกำหนดสัญญา) ออกจากปีสุดท้าย
+deathCashflows[policyTermYears] -= regularInflowYear16;
+
+// 2c. เพิ่มผลประโยชน์กรณีเสียชีวิตเข้าไปแทนที่
+const deathPayout = finalYearData.deathBenefit + finalYearData.deathDividend;
+deathCashflows[policyTermYears] += deathPayout;
+
+// --- คำนวณ IRR จากกระแสเงินสดที่สร้างขึ้นใหม่ ---
+const irrSurrender = calculateIRR(surrenderCashflows);
+const irrDeath = calculateIRR(deathCashflows);
+
+return {
     yearlyData,
     totalPremium: totalPremiumPaid,
     totalTaxBenefit,
     totalCashback,
     irrSurrender,
     irrDeath,
-  };
-}; // --- สิ้นสุดฟังก์ชัน performCalculations ---
+};
+}
