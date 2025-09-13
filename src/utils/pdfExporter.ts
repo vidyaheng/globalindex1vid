@@ -35,6 +35,60 @@ const fetchAndEncodeFont = (url: string): Promise<string> => {
     });
 };
 
+const wrapThaiText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
+    if (!text) return [];
+
+    // 1. สร้างตัวตัดคำสำหรับภาษาไทย ('th') จากเครื่องมือใน Browser
+    const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+
+    // 2. ทำการตัดคำ
+    const segments = segmenter.segment(text);
+
+    // 3. แปลงผลลัพธ์ให้เป็น Array ของ 'คำ' แต่ละคำ
+    const words = Array.from(segments, ({ segment }) => segment);
+
+    const mergedWords = words.reduce((acc, currentWord) => {
+        const lastWord = acc[acc.length - 1];
+
+        // กรณีที่ 1: ถ้าคำปัจจุบันเป็นเครื่องหมายปิดท้าย ให้ต่อท้ายคำก่อนหน้า
+        if (/^[)\]}”']$/.test(currentWord) && lastWord) {
+            acc[acc.length - 1] = lastWord + currentWord;
+        } 
+        // กรณีที่ 2: ถ้าคำ *ก่อนหน้า* เป็นเครื่องหมายเปิด ให้เอาคำปัจจุบันไปต่อท้าย
+        else if (/^[({\[“‘]$/.test(lastWord) && currentWord) {
+            acc[acc.length - 1] = lastWord + currentWord;
+        } 
+        // กรณีปกติ: เพิ่มคำใหม่เข้าไปใน array
+        else {
+            acc.push(currentWord);
+        }
+        
+        return acc;
+    }, [] as string[]);
+
+    // 4. นำคำมาต่อกันทีละคำเพื่อสร้างบรรทัด (เหมือนเดิม)
+    const lines: string[] = [];
+    let currentLine = '';
+
+    for (const word of mergedWords) {
+        const potentialLine = currentLine + word;
+        const potentialLineWidth = doc.getTextWidth(potentialLine);
+
+        if (potentialLineWidth > maxWidth && currentLine !== '') {
+            lines.push(currentLine);
+        	currentLine = word;
+        } else {
+            currentLine = potentialLine;
+        }
+    }
+    
+    if (currentLine !== '') {
+        lines.push(currentLine);
+    }
+    
+    return lines;
+};
+
 
 // เพิ่มพารามิเตอร์ includeTaxBenefit เพื่อรับเงื่อนไขจากภายนอก
 export const exportToPdf = async (formData: FormData, results: CalculationResults, includeTaxBenefit: boolean) => {
@@ -68,7 +122,7 @@ export const exportToPdf = async (formData: FormData, results: CalculationResult
         doc.setFont('Sarabun', 'normal');
 
         doc.setFontSize(11);
-        const summaryText = `ข้อมูลผู้เอาประกัน: อายุ ${formData.age} ปี | ทุนประกัน: ${formatNumber(formData.sumAssured)} บาท | เบี้ยประกัน: ${formatNumber(formData.premium)} บาท/ปี`;
+        const summaryText = `ข้อมูลผู้เอาประกัน: อายุ ${formData.age} ปี | ทุนประกัน: ${formatNumber(formData.sumAssured)} บาท | เบี้ยประกัน: ${formatNumber(formData.premium)} บาท/ปี | ผลตอบแทนคาดหวัง: ${formData.expectedReturn}% ต่อปี`;
         doc.text(summaryText, pageWidth / 2, 30, { align: 'center' });
 
         // --- สร้างกล่องสรุปแบบ Dynamic ตามเงื่อนไข ---
@@ -99,7 +153,17 @@ export const exportToPdf = async (formData: FormData, results: CalculationResult
             doc.roundedRect(startX + (index * (boxWidth + 10)), 40, boxWidth, boxHeight, 3, 3, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
-            doc.text(item.label, startX + (index * (boxWidth + 10)) + boxWidth / 2, 47, { align: 'center', maxWidth: boxWidth - 5 });
+
+            // --- ส่วนที่แก้ไขเรื่องการตัดคำ ---
+            const boxContentWidth = boxWidth - 5;
+            const wrappedLabel = wrapThaiText(doc, item.label, boxContentWidth);
+
+            wrappedLabel.forEach((line, lineIndex) => {
+                const yPos = 47 + (lineIndex * 4); 
+                doc.text(line, startX + (index * (boxWidth + 10)) + boxWidth / 2, yPos, { align: 'center' });
+            });
+            // --- จบส่วนที่แก้ไข ---
+
             doc.setFontSize(14);
             doc.setFont('Sarabun', 'bold');
             doc.text(item.value, startX + (index * (boxWidth + 10)) + boxWidth / 2, 57, { align: 'center' });
